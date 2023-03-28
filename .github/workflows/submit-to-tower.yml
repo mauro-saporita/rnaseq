@@ -2,7 +2,6 @@ name: Submit to tower
 run-name: Submitting workflow to all cloud providers
 on:
   workflow_dispatch:
-  pull_request:
 jobs:
   submit-test-full-to-tower:
     strategy:
@@ -10,19 +9,19 @@ jobs:
         compute-environment:
           - name: AWS
             outdir:  "$TOWER_BUCKET_AWS/results/${{ github.sha }}"
-            workdir: "$TOWER_BUCKET_AWS/work/${{ github.sha }}"
-            compute_env: TOWER_CE_AWS_CPU
             profile: test
+            compute_env: TOWER_CE_AWS_CPU
+            workdir: "$TOWER_BUCKET_AWS/work/${{ github.sha }}"
           - name: GCP
             outdir: "$TOWER_BUCKET_GCP/results/${{ github.sha }}"
-            workdir: "$TOWER_BUCKET_GCP/work/${{ github.sha }}"
-            compute_env: TOWER_CE_GCP_CPU
             profile: test
+            compute_env: TOWER_CE_GCP_CPU
+            workdir: "$TOWER_BUCKET_GCP/work/${{ github.sha }}"
           - name: AZ
             outdir:  "$TOWER_BUCKET_AZ/results/${{ github.sha }}"
-            workdir: "$TOWER_BUCKET_AZ/work/${{ github.sha }}"
-            compute_env: TOWER_CE_AZURE_CPU
             profile: test
+            compute_env: TOWER_CE_AZURE_CPU
+            workdir: "$TOWER_BUCKET_AZ/work/${{ github.sha }}"
     env:
       TOWER_BUCKET_AWS: ${{ secrets.TOWER_BUCKET_AWS }}
       TOWER_BUCKET_GCP: ${{ secrets.TOWER_BUCKET_GCP }}
