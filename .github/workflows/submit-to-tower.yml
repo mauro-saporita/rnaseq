@@ -1,6 +1,8 @@
 name: submit-to-tower
-run-name: ${{ github.actor }} is learning GitHub Actions
-on: [workflow_dispatch]
+run-name: Submitting workflow to all cloud providers
+on:
+  workflow_dispatch:
+  pull_request:
 jobs:
   submit-test-full-to-tower:
     strategy:
