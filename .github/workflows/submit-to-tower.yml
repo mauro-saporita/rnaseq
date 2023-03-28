@@ -1,4 +1,4 @@
-name: submit-to-tower
+name: Submit to tower
 run-name: Submitting workflow to all cloud providers
 on:
   workflow_dispatch:
@@ -9,20 +9,27 @@ jobs:
       matrix:
         compute-environment:
           - name: AWS
-            outdir: ${{ secrets.TOWER_BUCKET_AWS }}/results/${{ github.sha }}
-            workdir: ${{ secrets.TOWER_BUCKET_AWS }}/work/${{ github.sha }}
-            compute_env: ${{ secrets.TOWER_CE_AWS_CPU }}
+            outdir:  "$TOWER_BUCKET_AWS/results/${{ github.sha }}"
+            workdir: "$TOWER_BUCKET_AWS/work/${{ github.sha }}"
+            compute_env: TOWER_CE_AWS_CPU
             profile: test
           - name: GCP
-            outdir: ${{ secrets.TOWER_BUCKET_GCP }}/results/${{ github.sha }}
-            workdir: ${{ secrets.TOWER_BUCKET_GCP }}/work/${{ github.sha }}
-            compute_env: ${{ secrets.TOWER_CE_GCP_CPU }}
+            outdir: "$TOWER_BUCKET_GCP/results/${{ github.sha }}"
+            workdir: "$TOWER_BUCKET_GCP/work/${{ github.sha }}"
+            compute_env: TOWER_CE_GCP_CPU
             profile: test
           - name: AZ
-            outdir: ${{ secrets.TOWER_BUCKET_AZ }}/results/${{ github.sha }}
-            workdir: ${{ secrets.TOWER_BUCKET_AZ }}/work/${{ github.sha }}
-            compute_env: ${{ secrets.TOWER_CE_AZURE_CPU }}
+            outdir:  "$TOWER_BUCKET_AZ/results/${{ github.sha }}"
+            workdir: "$TOWER_BUCKET_AZ/work/${{ github.sha }}"
+            compute_env: TOWER_CE_AZURE_CPU
             profile: test
+    env:
+      TOWER_BUCKET_AWS: ${{ secrets.TOWER_BUCKET_AWS }}
+      TOWER_BUCKET_GCP: ${{ secrets.TOWER_BUCKET_GCP }}
+      TOWER_BUCKET_AZ: ${{ secrets.TOWER_BUCKET_AZ }}
+      TOWER_CE_AWS_CPU: ${{ secrets.TOWER_CE_AWS_CPU }}
+      TOWER_CE_GCP_CPU: ${{ secrets.TOWER_CE_GCP_CPU }}
+      TOWER_CE_AZURE_CPU: ${{ secrets.TOWER_CE_AZURE_CPU }}
     runs-on: ubuntu-latest
     steps:
       - uses: seqeralabs/action-tower-launch@add-wait
