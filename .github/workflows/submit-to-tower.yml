@@ -10,17 +10,17 @@ jobs:
           - name: AWS
             outdir:  "$TOWER_BUCKET_AWS/results/${{ github.sha }}"
             profile: test
-            compute_env: TOWER_CE_AWS_CPU
+            compute_env: "$TOWER_CE_AWS_CPU"
             workdir: "$TOWER_BUCKET_AWS/work/${{ github.sha }}"
           - name: GCP
             outdir: "$TOWER_BUCKET_GCP/results/${{ github.sha }}"
             profile: test
-            compute_env: TOWER_CE_GCP_CPU
+            compute_env: "$TOWER_CE_GCP_CPU"
             workdir: "$TOWER_BUCKET_GCP/work/${{ github.sha }}"
           - name: AZURE
             outdir:  "$TOWER_BUCKET_AZURE/results/${{ github.sha }}"
             profile: test
-            compute_env: TOWER_CE_AZURE_CPU
+            compute_env: "$TOWER_CE_AZURE_CPU"
             workdir: "$TOWER_BUCKET_AZURE/work/${{ github.sha }}"
     env:
       TOWER_BUCKET_AWS: ${{ secrets.TOWER_BUCKET_AWS }}
