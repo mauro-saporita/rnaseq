@@ -31,3 +31,5 @@ reports:
     display: "All samples STAR RSEM merged transcript raw counts"
   "**/star_rsem/rsem.merged.transcript_tpm.tsv":
     display: "All samples STAR RSEM merged transcript TPM counts"
+  samplesheet.csv:
+    display: "Auto-created samplesheet with collated metadata and FASTQ paths"
