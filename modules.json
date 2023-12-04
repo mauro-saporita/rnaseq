@@ -75,6 +75,16 @@
                         "git_sha": "bdc2a97ced7adc423acfa390742db83cab98c1ad",
                         "installed_by": ["modules"]
                     },
+                    "picard/createsequencedictionary": {
+                        "branch": "master",
+                        "git_sha": "20b0918591d4ba20047d7e13e5094bcceba81447",
+                        "installed_by": ["modules"]
+                    },
+                    "picard/crosscheckfingerprints": {
+                        "branch": "master",
+                        "git_sha": "20b0918591d4ba20047d7e13e5094bcceba81447",
+                        "installed_by": ["modules"]
+                    },
                     "picard/markduplicates": {
                         "branch": "master",
                         "git_sha": "2ee934606f1fdf7fc1cb05d6e8abc13bec8ab448",
