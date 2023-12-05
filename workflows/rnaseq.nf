@@ -33,6 +33,11 @@ if (!params.skip_bbsplit && !params.bbsplit_index && params.bbsplit_fasta_list) 
     if (ch_bbsplit_fasta_list.isEmpty()) {exit 1, "File provided with --bbsplit_fasta_list is empty: ${ch_bbsplit_fasta_list.getName()}!"}
 }
 
+// Check if haplotype map is provided
+if (params.haplotype_map) {
+    ch_haplotype_map = file(params.haplotype_map)
+}
+
 // Check alignment parameters
 def prepareToolIndices  = []
 if (!params.skip_bbsplit) { prepareToolIndices << 'bbsplit' }
@@ -40,15 +45,15 @@ if (!params.skip_alignment) { prepareToolIndices << params.aligner }
 if (!params.skip_pseudo_alignment && params.pseudo_aligner) { prepareToolIndices << params.pseudo_aligner }
 
 // Determine whether to filter the GTF or not
-def filterGtf = 
+def filterGtf =
     ((
         // Condition 1: Alignment is required and aligner is set
         !params.skip_alignment && params.aligner
-    ) || 
+    ) ||
     (
         // Condition 2: Pseudoalignment is required and pseudoaligner is set
         !params.skip_pseudo_alignment && params.pseudo_aligner
-    ) || 
+    ) ||
     (
         // Condition 3: Transcript FASTA file is not provided
         !params.transcript_fasta
@@ -155,6 +160,7 @@ include { BAM_DEDUP_STATS_SAMTOOLS_UMITOOLS as BAM_DEDUP_STATS_SAMTOOLS_UMITOOLS
 include { BAM_DEDUP_STATS_SAMTOOLS_UMITOOLS as BAM_DEDUP_STATS_SAMTOOLS_UMITOOLS_TRANSCRIPTOME } from '../subworkflows/nf-core/bam_dedup_stats_samtools_umitools'
 include { BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG as BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_FORWARD } from '../subworkflows/nf-core/bedgraph_bedclip_bedgraphtobigwig'
 include { BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG as BEDGRAPH_BEDCLIP_BEDGRAPHTOBIGWIG_REVERSE } from '../subworkflows/nf-core/bedgraph_bedclip_bedgraphtobigwig'
+include { FINGERPRINTS_PICARD              } from '../subworkflows/nf-core/fingerprints_picard'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -664,6 +670,18 @@ workflow RNASEQ {
             ch_genome_bam_index = BAM_MARKDUPLICATES_PICARD.out.csi
         }
         ch_versions = ch_versions.mix(BAM_MARKDUPLICATES_PICARD.out.versions)
+
+        ch_bam = BAM_MARKDUPLICATES_PICARD.out.bam
+
+        FINGERPRINTS_PICARD (
+            ch_bam,
+            params.fasta,
+            ch_haplotype_map,
+            PREPARE_GENOME.out.fai
+        )
+        // ch_fingerprint_vcf                  = FINGERPRINTS_PICARD.out.vcf
+        // ch_fingerprint_crosscheck_metrics   = FINGERPRINTS_PICARD.out.crosscheck_metrics
+        ch_versions                         = ch_versions.mix(FINGERPRINTS_PICARD.out.versions)
     }
 
     //
@@ -816,7 +834,7 @@ workflow RNASEQ {
     //
     ch_pseudo_multiqc                   = Channel.empty()
     ch_pseudoaligner_pca_multiqc        = Channel.empty()
-    ch_pseudoaligner_clustering_multiqc = Channel.empty()    
+    ch_pseudoaligner_clustering_multiqc = Channel.empty()
     if (!params.skip_pseudo_alignment && params.pseudo_aligner) {
 
        if (params.pseudo_aligner == 'salmon') {
@@ -851,7 +869,7 @@ workflow RNASEQ {
             ch_versions = ch_versions.mix(DESEQ2_QC_PSEUDO.out.versions)
         }
     }
-    
+
     //
     // MODULE: Pipeline reporting
     //
@@ -922,7 +940,7 @@ workflow.onComplete {
     if (params.email || params.email_on_fail) {
         NfcoreTemplate.email(workflow, params, summary_params, projectDir, log, multiqc_report, pass_mapped_reads, pass_trimmed_reads, pass_strand_check)
     }
-    
+
     NfcoreTemplate.dump_parameters(workflow, params)
     NfcoreTemplate.summary(workflow, params, log, pass_mapped_reads, pass_trimmed_reads, pass_strand_check)
 

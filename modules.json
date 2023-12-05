@@ -85,6 +85,11 @@
                         "git_sha": "20b0918591d4ba20047d7e13e5094bcceba81447",
                         "installed_by": ["modules"]
                     },
+                    "picard/extractfingerprint": {
+                        "branch": "master",
+                        "git_sha": "3aaf92fd11a03350f16d18d8644becc654456594",
+                        "installed_by": ["modules"]
+                    },
                     "picard/markduplicates": {
                         "branch": "master",
                         "git_sha": "2ee934606f1fdf7fc1cb05d6e8abc13bec8ab448",

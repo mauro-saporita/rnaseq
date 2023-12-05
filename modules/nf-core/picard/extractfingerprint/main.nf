@@ -8,7 +8,7 @@ process PICARD_EXTRACTFINGERPRINT {
         'biocontainers/picard:3.1.1--hdfd78af_0' }"
 
     input:
-    tuple val(meta), path(bam), path(bai)
+    tuple val(meta), path(bam)
     path  haplotype_map
     path  fasta
     path  fasta_fai
@@ -24,7 +24,7 @@ process PICARD_EXTRACTFINGERPRINT {
 
     script:
     def args = task.ext.args ?: ''
-    prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}"
 
     def reference = fasta ? "--REFERENCE_SEQUENCE ${fasta}" : ""
     def bam_name = bam.simpleName
@@ -48,24 +48,19 @@ process PICARD_EXTRACTFINGERPRINT {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        picard: \$(echo \$(picard --version 2>&1) | sed 's/^.*(PICARD) v//; s/ .*\$//')
+        picard: \$(echo \$(picard ExtractFingerprint --version 2>&1) | grep -o 'Version:.*' | cut -f2- -d:)
     END_VERSIONS
     """
 
     stub:
-    prefix = task.ext.prefix ?: "${meta.id}.bam"
-    prefix_no_suffix = task.ext.prefix ? prefix.tokenize('.')[0] : "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    touch ${prefix_no_suffix}.bam
-    touch ${prefix_no_suffix}.cram
-    touch ${prefix_no_suffix}.cram.crai
-    touch ${prefix_no_suffix}.bai
-    touch ${prefix}.metrics
+    touch ${prefix}.vcf
+    touch ${prefix}.vcf.gz.tbi
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        picard: \$(echo \$(picard --version 2>&1) | sed 's/^.*(PICARD) v//; s/ .*\$//')
-        samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//')
+        picard: \$(echo \$(picard ExtractFingerprint --version 2>&1) | grep -o 'Version:.*' | cut -f2- -d:)
     END_VERSIONS
     """
 }
