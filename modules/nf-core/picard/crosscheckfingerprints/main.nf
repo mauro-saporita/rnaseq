@@ -24,7 +24,7 @@ process PICARD_CROSSCHECKFINGERPRINTS {
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     def input1_string = input1.join(" --INPUT ")
-    def input2_string = input2 ? "--SECOND_INPUT " + input2.join(" --SECOND_INPUT ") : ""
+    def input2_string = input2.name != "dummy_file.txt" ? "--SECOND_INPUT " + input2.join(" --SECOND_INPUT ") : ""
 
     def avail_mem = 3072
     if (!task.memory) {

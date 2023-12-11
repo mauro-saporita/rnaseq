@@ -10,7 +10,7 @@ process PICARD_CREATESEQUENCEDICTIONARY {
     path(fasta)
 
     output:
-    path("*.dict")                 , emit: reference_dict
+    path("*.dict"), emit: reference_dict
     path "versions.yml"            , emit: versions
 
     when:
@@ -18,7 +18,7 @@ process PICARD_CREATESEQUENCEDICTIONARY {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "fasta"
+    def prefix = task.ext.prefix ?: "${fasta.getName()}"
     def avail_mem = 3072
     if (!task.memory) {
         log.info '[Picard CreateSequenceDictionary] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this.'

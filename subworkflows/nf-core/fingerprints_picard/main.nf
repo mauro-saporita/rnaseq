@@ -27,14 +27,26 @@ workflow FINGERPRINTS_PICARD {
     PICARD_EXTRACTFINGERPRINT ( bam, haplotype_map, fasta, fasta_fai, PICARD_CREATESEQUENCEDICTIONARY.out.reference_dict )
     ch_versions = ch_versions.mix(PICARD_EXTRACTFINGERPRINT.out.versions.first())
 
+    ch_merged_vcfs = PICARD_EXTRACTFINGERPRINT
+    .out
+    .vcf
+    .map { it ->
+        it[1]
+    }
+    .collect()
+    .map { it -> [[id:'fingerprints'], it]
+    }
+
     // Cross-check fingerprints
 
-    // PICARD_CROSSCHECKFINGERPRINTS ( bam, haplotype_map )
-    // ch_versions = ch_versions.mix(PICARD_CROSSCHECKFINGERPRINTS.out.versions.first())
+    ch_input_2 = Channel.fromPath("${projectDir}/assets/dummy_file.txt")
+
+    PICARD_CROSSCHECKFINGERPRINTS ( ch_merged_vcfs, ch_input_2, haplotype_map )
+    ch_versions = ch_versions.mix(PICARD_CROSSCHECKFINGERPRINTS.out.versions.first())
 
     emit:
-    // vcf                     = PICARD_EXTRACTFINGERPRINT.out.vcf           // channel: [ val(meta), [ vfc ] ]
-    // crosscheck_metrics      = PICARD_CROSSCHECKFINGERPRINTS.out.crosscheck_metrics          // channel: [ val(meta), [ crosscheck_metrics ] ]
+    vcf                     = PICARD_EXTRACTFINGERPRINT.out.vcf           // channel: [ val(meta), [ vfc ] ]
+    crosscheck_metrics      = PICARD_CROSSCHECKFINGERPRINTS.out.crosscheck_metrics          // channel: [ val(meta), [ crosscheck_metrics ] ]
 
     versions = ch_versions                     // channel: [ versions.yml ]
 }

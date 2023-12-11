@@ -672,10 +672,11 @@ workflow RNASEQ {
         ch_versions = ch_versions.mix(BAM_MARKDUPLICATES_PICARD.out.versions)
 
         ch_bam = BAM_MARKDUPLICATES_PICARD.out.bam
+        ch_fasta_for_dict = PREPARE_GENOME.out.fasta
 
         FINGERPRINTS_PICARD (
             ch_bam,
-            params.fasta,
+            ch_fasta_for_dict,
             ch_haplotype_map,
             PREPARE_GENOME.out.fai
         )
