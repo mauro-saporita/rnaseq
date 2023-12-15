@@ -15,7 +15,6 @@ process RSEM_CALCULATEEXPRESSION {
     tuple val(meta), path("*.genes.results")   , emit: counts_gene
     tuple val(meta), path("*.isoforms.results"), emit: counts_transcript
     tuple val(meta), path("*.stat")            , emit: stat
-    tuple val(meta), path("*.log")             , emit: logs
     path  "versions.yml"                       , emit: versions
 
     tuple val(meta), path("*.STAR.genome.bam")       , optional:true, emit: bam_star
@@ -37,14 +36,15 @@ process RSEM_CALCULATEEXPRESSION {
     }
     def paired_end = meta.single_end ? "" : "--paired-end"
     """
-    INDEX=`find -L ./ -name "*.grp" | sed 's/\\.grp\$//'`
+    INDEX=`find -L $index -name "*.grp" | sed 's/\\.grp\$//'`
+    echo \$INDEX
     rsem-calculate-expression \\
         --num-threads $task.cpus \\
         --temporary-folder ./tmp/ \\
         $strandedness \\
         $paired_end \\
         $args \\
-        $reads \\
+        --alignments $reads \\
         \$INDEX \\
         $prefix
 

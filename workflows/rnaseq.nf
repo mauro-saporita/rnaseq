@@ -526,17 +526,31 @@ workflow RNASEQ {
     //
     ch_rsem_multiqc = Channel.empty()
     if (!params.skip_alignment && params.aligner == 'star_rsem') {
+        ALIGN_STAR (
+            ch_filtered_reads,
+            PREPARE_GENOME.out.rsem_index.map { [ [:], it ] },
+            PREPARE_GENOME.out.gtf.map { [ [:], it ] },
+            params.star_ignore_sjdbgtf,
+            '',
+            params.seq_center ?: '',
+            is_aws_igenome,
+            PREPARE_GENOME.out.fasta.map { [ [:], it ] }
+        )
+        ch_genome_bam        = ALIGN_STAR.out.bam
+        ch_genome_bam_index  = ALIGN_STAR.out.bai
+        ch_transcriptome_bam = ALIGN_STAR.out.bam_transcript
+        ch_samtools_stats    = ALIGN_STAR.out.stats
+        ch_samtools_flagstat = ALIGN_STAR.out.flagstat
+        ch_samtools_idxstats = ALIGN_STAR.out.idxstats
+        ch_star_multiqc      = ALIGN_STAR.out.log_final
+
         QUANTIFY_RSEM (
             ch_filtered_reads,
+            ch_transcriptome_bam,
             PREPARE_GENOME.out.rsem_index,
             PREPARE_GENOME.out.fasta.map { [ [:], it ] }
         )
-        ch_genome_bam        = QUANTIFY_RSEM.out.bam
-        ch_genome_bam_index  = QUANTIFY_RSEM.out.bai
-        ch_samtools_stats    = QUANTIFY_RSEM.out.stats
-        ch_samtools_flagstat = QUANTIFY_RSEM.out.flagstat
-        ch_samtools_idxstats = QUANTIFY_RSEM.out.idxstats
-        ch_star_multiqc      = QUANTIFY_RSEM.out.logs
+
         ch_rsem_multiqc      = QUANTIFY_RSEM.out.stat
         if (params.bam_csi_index) {
             ch_genome_bam_index = QUANTIFY_RSEM.out.csi

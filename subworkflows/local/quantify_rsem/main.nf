@@ -9,6 +9,7 @@ include { BAM_SORT_STATS_SAMTOOLS  } from '../../nf-core/bam_sort_stats_samtools
 workflow QUANTIFY_RSEM {
     take:
     reads // channel: [ val(meta), [ reads ] ]
+    bam   // channel: [ val(meta), [ bam ] ]
     index // channel: /path/to/rsem/index/
     fasta // channel: [ val(meta), [ fasta ] ]
 
@@ -19,7 +20,7 @@ workflow QUANTIFY_RSEM {
     //
     // Quantify reads with RSEM
     //
-    RSEM_CALCULATEEXPRESSION ( reads, index )
+    RSEM_CALCULATEEXPRESSION ( bam, index )
     ch_versions = ch_versions.mix(RSEM_CALCULATEEXPRESSION.out.versions.first())
 
     //
@@ -41,7 +42,6 @@ workflow QUANTIFY_RSEM {
     counts_gene              = RSEM_CALCULATEEXPRESSION.out.counts_gene       // channel: [ val(meta), counts ]
     counts_transcript        = RSEM_CALCULATEEXPRESSION.out.counts_transcript // channel: [ val(meta), counts ]
     stat                     = RSEM_CALCULATEEXPRESSION.out.stat              // channel: [ val(meta), stat ]
-    logs                     = RSEM_CALCULATEEXPRESSION.out.logs              // channel: [ val(meta), logs ]
     bam_star                 = RSEM_CALCULATEEXPRESSION.out.bam_star          // channel: [ val(meta), bam ]
     bam_genome               = RSEM_CALCULATEEXPRESSION.out.bam_genome        // channel: [ val(meta), bam ]
     bam_transcript           = RSEM_CALCULATEEXPRESSION.out.bam_transcript    // channel: [ val(meta), bam ]
