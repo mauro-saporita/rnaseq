@@ -41,12 +41,6 @@ process KALLISTO_QUANT {
         single_end_params = "--single --fragment-length=${fragment_length} --sd=${fragment_length_sd}"
     }
 
-    def strandedness = ''
-    if (!args.contains('--fr-stranded') && !args.contains('--rf-stranded')) {
-        strandedness =  (meta.strandedness == 'forward') ? '--fr-stranded' :
-                        (meta.strandedness == 'reverse') ? '--rf-stranded' : ''
-    }
-
     """
     mkdir -p $prefix && kallisto quant \\
             --threads ${task.cpus} \\
@@ -54,7 +48,6 @@ process KALLISTO_QUANT {
             ${gtf_input} \\
             ${chromosomes_input} \\
             ${single_end_params} \\
-            ${strandedness} \\
             ${args} \\
             -o $prefix \\
             ${reads} 2> >(tee -a ${prefix}/kallisto_quant.log >&2)
