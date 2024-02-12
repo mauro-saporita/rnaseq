@@ -528,7 +528,7 @@ workflow RNASEQ {
     if (!params.skip_alignment && params.aligner == 'star_rsem') {
         ALIGN_STAR (
             ch_filtered_reads,
-            PREPARE_GENOME.out.rsem_index.map { [ [:], it ] },
+            PREPARE_GENOME.out.star_index.map { [ [:], it ] },
             PREPARE_GENOME.out.gtf.map { [ [:], it ] },
             params.star_ignore_sjdbgtf,
             '',
@@ -543,6 +543,8 @@ workflow RNASEQ {
         ch_samtools_flagstat = ALIGN_STAR.out.flagstat
         ch_samtools_idxstats = ALIGN_STAR.out.idxstats
         ch_star_multiqc      = ALIGN_STAR.out.log_final
+
+        ch_versions = ch_versions.mix(ALIGN_STAR.out.versions)
 
         QUANTIFY_RSEM (
             ch_filtered_reads,
