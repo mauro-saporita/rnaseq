@@ -11,6 +11,7 @@ process PICARD_CROSSCHECKFINGERPRINTS {
     tuple val(meta), path(input1)
     path input2
     path haplotype_map
+    path crosscheckfingerprint_sample_map
 
     output:
     tuple val(meta), path("*.crosscheck_metrics.txt"), emit: crosscheck_metrics
@@ -25,6 +26,7 @@ process PICARD_CROSSCHECKFINGERPRINTS {
 
     def input1_string = input1.join(" --INPUT ")
     def input2_string = input2.name != "dummy_file.txt" ? "--SECOND_INPUT " + input2.join(" --SECOND_INPUT ") : ""
+    def sample_individual_map = crosscheckfingerprint_sample_map ? "--SAMPLE_INDIVIDUAL_MAP ${crosscheckfingerprint_sample_map}" : ''
 
     def avail_mem = 3072
     if (!task.memory) {
@@ -41,6 +43,7 @@ process PICARD_CROSSCHECKFINGERPRINTS {
         --INPUT $input1_string \\
         $input2_string \\
         --HAPLOTYPE_MAP ${haplotype_map} \\
+        $sample_individual_map \\
         --OUTPUT ${prefix}.crosscheck_metrics.txt
 
     cat <<-END_VERSIONS > versions.yml

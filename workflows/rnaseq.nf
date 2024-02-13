@@ -33,9 +33,14 @@ if (!params.skip_bbsplit && !params.bbsplit_index && params.bbsplit_fasta_list) 
     if (ch_bbsplit_fasta_list.isEmpty()) {exit 1, "File provided with --bbsplit_fasta_list is empty: ${ch_bbsplit_fasta_list.getName()}!"}
 }
 
-// Check if haplotype map is provided
+// Check if haplotype map for Picard Crosscheckfingerprints is provided
 if (params.haplotype_map) {
     ch_haplotype_map = file(params.haplotype_map)
+}
+
+// Check if sample individual map for Picard Crosscheckfingerprints is provided
+if (params.crosscheckfingerprint_sample_map) {
+    ch_crosscheckfingerprint_sample_map = file(params.crosscheckfingerprint_sample_map)
 }
 
 // Check alignment parameters
@@ -694,6 +699,7 @@ workflow RNASEQ {
             ch_bam,
             ch_fasta_for_dict,
             ch_haplotype_map,
+            ch_crosscheckfingerprint_sample_map,
             PREPARE_GENOME.out.fai
         )
         // ch_fingerprint_vcf                  = FINGERPRINTS_PICARD.out.vcf
