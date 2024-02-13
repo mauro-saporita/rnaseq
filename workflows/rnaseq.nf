@@ -34,14 +34,10 @@ if (!params.skip_bbsplit && !params.bbsplit_index && params.bbsplit_fasta_list) 
 }
 
 // Check if haplotype map for Picard Crosscheckfingerprints is provided
-if (params.haplotype_map) {
-    ch_haplotype_map = file(params.haplotype_map)
-}
+ch_haplotype_map   = params.haplotype_map ? Channel.fromPath(params.haplotype_map) : []
 
 // Check if sample individual map for Picard Crosscheckfingerprints is provided
-if (params.crosscheckfingerprint_sample_map) {
-    ch_crosscheckfingerprint_sample_map = file(params.crosscheckfingerprint_sample_map)
-}
+ch_crosscheckfingerprint_sample_map   = params.crosscheckfingerprint_sample_map ? Channel.fromPath(params.crosscheckfingerprint_sample_map) : []
 
 // Check alignment parameters
 def prepareToolIndices  = []
