@@ -529,7 +529,7 @@ workflow RNASEQ {
     if (!params.skip_alignment && params.aligner == 'star_rsem') {
         ALIGN_STAR (
             ch_filtered_reads,
-            PREPARE_GENOME.out.star_index.map { [ [:], it ] },
+            PREPARE_GENOME.out.rsem_index.map { [ [:], it ] },
             PREPARE_GENOME.out.gtf.map { [ [:], it ] },
             params.star_ignore_sjdbgtf,
             '',
