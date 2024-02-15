@@ -11,7 +11,6 @@ workflow FINGERPRINTS_PICARD {
     bam
     fasta
     haplotype_map
-    crosscheckfingerprint_sample_map
     fasta_fai
 
     main:
@@ -42,7 +41,7 @@ workflow FINGERPRINTS_PICARD {
 
     ch_input_2 = Channel.fromPath("${projectDir}/assets/dummy_file.txt")
 
-    PICARD_CROSSCHECKFINGERPRINTS ( ch_merged_vcfs, ch_input_2, haplotype_map, crosscheckfingerprint_sample_map )
+    PICARD_CROSSCHECKFINGERPRINTS ( ch_merged_vcfs, ch_input_2, haplotype_map )
     ch_versions = ch_versions.mix(PICARD_CROSSCHECKFINGERPRINTS.out.versions.first())
 
     emit:

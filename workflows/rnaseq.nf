@@ -36,9 +36,6 @@ if (!params.skip_bbsplit && !params.bbsplit_index && params.bbsplit_fasta_list) 
 // Check if haplotype map for Picard Crosscheckfingerprints is provided
 ch_haplotype_map   = params.haplotype_map ? Channel.fromPath(params.haplotype_map) : []
 
-// Check if sample individual map for Picard Crosscheckfingerprints is provided
-ch_crosscheckfingerprint_sample_map   = params.crosscheckfingerprint_sample_map ? Channel.fromPath(params.crosscheckfingerprint_sample_map) : []
-
 // Check alignment parameters
 def prepareToolIndices  = []
 if (!params.skip_bbsplit) { prepareToolIndices << 'bbsplit' }
@@ -529,7 +526,7 @@ workflow RNASEQ {
     if (!params.skip_alignment && params.aligner == 'star_rsem') {
         ALIGN_STAR (
             ch_filtered_reads,
-            PREPARE_GENOME.out.rsem_index.map { [ [:], it ] },
+            PREPARE_GENOME.out.star_index.map { [ [:], it ] },
             PREPARE_GENOME.out.gtf.map { [ [:], it ] },
             params.star_ignore_sjdbgtf,
             '',
@@ -695,7 +692,6 @@ workflow RNASEQ {
             ch_bam,
             ch_fasta_for_dict,
             ch_haplotype_map,
-            ch_crosscheckfingerprint_sample_map,
             PREPARE_GENOME.out.fai
         )
         // ch_fingerprint_vcf                  = FINGERPRINTS_PICARD.out.vcf
